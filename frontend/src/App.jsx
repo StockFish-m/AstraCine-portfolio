@@ -3,6 +3,7 @@ import ClientLayout from "./layouts/ClientLayout";
 import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
+import SeatSelection from "./pages/Booking/SeatSelection";
 
 function App() {
   return (
@@ -11,6 +12,8 @@ function App() {
         {/* CLIENT LAYOUT */}
         <Route element={<ClientLayout />}>
           <Route path="/" element={<Home />} />
+            <Route path="/showtimes/:showtimeId/seats" element={<SeatSelection />} />
+
         </Route>
 
         {/* AUTH PAGES */}
