@@ -15,8 +15,13 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = (userData) => {
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
+    // Convert userId to id for consistency
+    const normalizedUser = {
+      ...userData,
+      id: userData.userId || userData.id,
+    };
+    setUser(normalizedUser);
+    localStorage.setItem("user", JSON.stringify(normalizedUser));
   };
 
   const logout = () => {

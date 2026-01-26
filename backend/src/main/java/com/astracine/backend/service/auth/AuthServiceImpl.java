@@ -24,8 +24,7 @@ public class AuthServiceImpl implements AuthService {
     public AuthServiceImpl(
             UserRepository userRepository,
             RoleRepository roleRepository,
-            PasswordEncoder passwordEncoder
-    ) {
+            PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -39,16 +38,12 @@ public class AuthServiceImpl implements AuthService {
                 .findByUsernameOrEmailOrPhone(
                         request.getIdentifier(),
                         request.getIdentifier(),
-                        request.getIdentifier()
-                )
-                .orElseThrow(() ->
-                        new RuntimeException("Invalid username/email/phone or password")
-                );
+                        request.getIdentifier())
+                .orElseThrow(() -> new RuntimeException("Invalid username/email/phone or password"));
 
         if (!passwordEncoder.matches(
                 request.getPassword(),
-                user.getPassword()
-        )) {
+                user.getPassword())) {
             throw new RuntimeException("Invalid username/email/phone or password");
         }
 
@@ -108,7 +103,6 @@ public class AuthServiceImpl implements AuthService {
                 user.getFullName(),
                 user.getEmail(),
                 user.getPhone(),
-                roles
-        );
+                roles);
     }
 }

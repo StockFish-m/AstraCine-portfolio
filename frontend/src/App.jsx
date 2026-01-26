@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ClientRoutes from "./routes/ClientRoutes";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -47,4 +45,3 @@ function App() {
 }
 
 export default App;
->>>>>>> 375d7aaba9202f07abf970165d10ab7f5ee0c24f

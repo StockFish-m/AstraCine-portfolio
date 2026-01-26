@@ -1,64 +1,23 @@
 package com.astracine.backend.service;
 
-import com.astracine.backend.dto.UserRequest;
-import com.astracine.backend.dto.UserResponse;
-import com.astracine.backend.entity.User;
-import com.astracine.backend.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import com.astracine.backend.dto.ChangePasswordRequest;
+import com.astracine.backend.dto.UpdateProfileRequest;
+import com.astracine.backend.dto.UserProfileResponse;
 
-import java.util.stream.Collectors;
-
-@Service
-@RequiredArgsConstructor
-public class UserService {
-
-    private final UserRepository userRepository;
+public interface UserService {
 
     /**
-     * Lấy profile user theo id
+     * Lấy thông tin profile của user hiện tại
      */
-    public UserResponse getProfile(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        return mapToResponse(user);
-    }
+    UserProfileResponse getProfile(Long userId);
 
     /**
-     * Customer cập nhật profile của chính mình
-     * (KHÔNG cho sửa username, password, role, status)
+     * Cập nhật thông tin profile của user
      */
-    public UserResponse updateCustomerProfile(Long userId, UserRequest request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        // chỉ update các field cho phép
-        user.setFullName(request.getFullName());
-        user.setPhone(request.getPhone());
-        user.setEmail(request.getEmail());
-
-        userRepository.save(user);
-
-        return mapToResponse(user);
-    }
+    UserProfileResponse updateProfile(Long userId, UpdateProfileRequest request);
 
     /**
-     * Map Entity → Response DTO
+     * Thay đổi mật khẩu
      */
-    private UserResponse mapToResponse(User user) {
-        return new UserResponse(
-                user.getId(),
-                user.getUsername(),
-                user.getFullName(),
-                user.getPhone(),
-                user.getEmail(),
-                user.getStatus(),
-                user.getCreatedAt(),
-                user.getUpdatedAt(),
-                user.getRoles()
-                        .stream()
-                        .map(role -> role.getName())
-                        .collect(Collectors.toSet()));
-    }
+    void changePassword(Long userId, ChangePasswordRequest request);
 }

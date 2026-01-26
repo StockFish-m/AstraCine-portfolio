@@ -39,7 +39,12 @@ function Login() {
 
       login(res.data);
 
-      switch (res.data.role) {
+      // Lấy role đầu tiên từ roles set
+      const userRole = res.data.roles && res.data.roles.length > 0
+        ? res.data.roles[0]
+        : "CUSTOMER";
+
+      switch (userRole) {
         case "ADMIN":
           navigate("/admin");
           break;
