@@ -1,15 +1,17 @@
 package com.astracine.backend.config;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -18,6 +20,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+
             // 1. Tắt CSRF (cần thiết cho API REST)
             .csrf(AbstractHttpConfigurer::disable)
             
@@ -25,24 +28,58 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             
             // 3. Cho phép truy cập API
-            .authorizeHttpRequests(auth -> auth
+            
                 // Cho phép Options request và các API public
-                .requestMatchers("/api/**").permitAll() 
-                .anyRequest().authenticated()
-            );
+           
 
+               
+                .authorizeHttpRequests(auth -> auth
+
+
+                        // ===== PUBLIC =====
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
+
+                        // ===== ADMIN =====
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // ===== MANAGER =====
+                        .requestMatchers("/api/manager/**").hasRole("MANAGER")
+
+                        // ===== STAFF =====
+                        .requestMatchers("/api/staff/**").hasRole("STAFF")
+
+                        // ===== CUSTOMER (user thường) =====
+                        .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
+
+                        // ===== LOGIN LÀ VÀO ĐƯỢC (trang chung) =====
+                        .requestMatchers("/api/user/**")
+                        .hasAnyRole("CUSTOMER", "STAFF", "MANAGER", "ADMIN")
+
+                        // ===== CÒN LẠI =====
+                        .anyRequest().authenticated())
+                .httpBasic();
         return http.build();
     }
 
-    // Cấu hình chi tiết CORS
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
     @Bean
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
+
         
         // QUAN TRỌNG: Cho phép đúng cổng Frontend đang chạy (trong ảnh là 5174)
-        config.setAllowedOrigins(List.of("http://localhost:5174", "http://localhost:5173")); 
+        config.setAllowedOrigins(List.of("http://localhost:5174")); 
         
         // Cho phép các method
+
+        config.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "http://localhost:3000"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         
         // Cho phép mọi header
