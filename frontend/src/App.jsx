@@ -1,17 +1,47 @@
-import { BrowserRouter, Routes } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ClientRoutes from "./routes/ClientRoutes";
-import AuthRoutes from "./routes/AuthRoutes";
-import AdminRoutes from "./routes/AdminRoutes";
+import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import RoleRoute from "./routes/RoleRoute";
+import AdminLayout from "./layouts/AdminLayout";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {ClientRoutes()}
-        {AuthRoutes()}
-        {AdminRoutes()}
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+
+          {/* CLIENT */}
+          <Route path="/*">
+            {ClientRoutes()}
+          </Route>
+
+          {/* ADMIN */}
+          <Route
+            path="/admin/*"
+            element={
+              <ProtectedRoute>
+                <RoleRoute allowRoles={["ROLE_ADMIN"]}>
+                  <AdminLayout />
+                </RoleRoute>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* STAFF */}
+          <Route
+            path="/staff/*"
+            element={
+              <ProtectedRoute>
+                <RoleRoute allowRoles={["STAFF"]}>
+                </RoleRoute>
+              </ProtectedRoute>
+            }
+          />
+
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

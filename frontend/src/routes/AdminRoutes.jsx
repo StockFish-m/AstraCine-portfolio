@@ -1,29 +1,33 @@
 import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
-import PortalLayout from '../layouts/PortalLayout';
+
+// 1. Import Layout Mới (đã gộp)
+import AdminLayout from '../layouts/AdminLayout';
+
+// 2. Import Các Page (Cũ & Mới)
 import Dashboard from '../pages/admin/Dashboard';
 import RoomManager from '../pages/admin/RoomManager';
+ // Giả sử bạn có trang này
 
-// Hàm này trả về một cây Route, khớp với cách gọi {AdminRoutes()} bên App.jsx
 const AdminRoutes = () => {
     return (
-        /* Tất cả các trang bắt đầu bằng /portal sẽ dùng chung PortalLayout 
-           (Có Sidebar và Header)
+        /* ✅ Base Path là "/admin"
+           Tất cả trang con sẽ dùng chung AdminLayout (có Sidebar đẹp)
         */
-        <Route path="/portal" element={<PortalLayout />}>
+        <Route path="/admin" element={<AdminLayout />}>
             
-            {/* Trang mặc định: Khi vào /portal sẽ tự nhảy sang /portal/dashboard 
-            */}
+            {/* Mặc định vào /admin sẽ nhảy sang Dashboard */}
             <Route index element={<Navigate to="dashboard" replace />} />
 
-            {/* Các trang con: 
-               path không cần dấu "/" ở đầu vì nó nối tiếp theo cha
-            */}
+            {/* --- NHÓM QUẢN LÝ RẠP (Từ Portal cũ) --- */}
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="rooms" element={<RoomManager />} />
             
-            {/* Sau này thêm showtimes ở đây */}
+          
+            
+            {/* --- NHÓM LỊCH CHIẾU (Sắp làm) --- */}
             {/* <Route path="showtimes" element={<ShowtimeManager />} /> */}
+
         </Route>
     );
 };
