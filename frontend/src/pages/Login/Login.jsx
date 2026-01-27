@@ -6,7 +6,7 @@ import { loginApi } from "../../api/authApi";
 
 function Login() {
   const navigate = useNavigate();
-  const { login } = useAuth(); // ⭐ BẮT BUỘC
+  const { login } = useAuth(); // giữ nguyên
 
   const [form, setForm] = useState({
     identifier: "",
@@ -39,6 +39,7 @@ function Login() {
 
       login(res.data);
 
+<<<<<<< HEAD
       // Lấy role đầu tiên từ roles set
       const userRole = res.data.roles && res.data.roles.length > 0
         ? res.data.roles[0]
@@ -48,13 +49,20 @@ function Login() {
         case "ADMIN":
           navigate("/admin");
           break;
+=======
+      const roles = res.data.roles || [];
+>>>>>>> b9d646e2b48bcd8c96c9f3f58d597f51b9f7b8b5
 
-        case "STAFF":
-          navigate("/staff");
-          break;
-
-        default: // CUSTOMER
-          navigate("/");
+      if (roles.includes("ROLE_ADMIN")) {
+        navigate("/admin");
+      } else if (roles.includes("ROLE_MANAGER")) {
+        navigate("/manager");
+      } else if (roles.includes("ROLE_STAFF")) {
+        navigate("/staff");
+      } else if (roles.includes("ROLE_CUSTOMER")) {
+        navigate("/");
+      } else {
+        navigate("/");
       }
     } catch (err) {
       setError("Sai tài khoản hoặc mật khẩu");
@@ -85,6 +93,11 @@ function Login() {
             value={form.password}
             onChange={handleChange}
           />
+
+          {/* ✅ CHỈ THÊM DÒNG NÀY */}
+          <div className="forgot-password">
+            <Link to="/forgot-password">Quên mật khẩu?</Link>
+          </div>
 
           <button type="submit" disabled={loading}>
             {loading ? "Signing in..." : "Đăng nhập"}

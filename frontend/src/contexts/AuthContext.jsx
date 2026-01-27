@@ -15,11 +15,19 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = (userData) => {
+<<<<<<< HEAD
     // Convert userId to id for consistency
     const normalizedUser = {
       ...userData,
       id: userData.userId || userData.id,
     };
+=======
+    const normalizedUser = {
+      ...userData,
+      role: userData.roles?.[0] || "CUSTOMER",
+    };
+
+>>>>>>> b9d646e2b48bcd8c96c9f3f58d597f51b9f7b8b5
     setUser(normalizedUser);
     localStorage.setItem("user", JSON.stringify(normalizedUser));
   };
@@ -27,6 +35,10 @@ export function AuthProvider({ children }) {
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
+  };
+
+  const hasRole = (role) => {
+    return user?.roles?.includes(role);
   };
 
   if (loading) return null;
