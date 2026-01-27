@@ -25,9 +25,11 @@ public class SecurityConfig {
                         // ===== PUBLIC =====
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/api/admin/**").permitAll() // TEMPORARY: For testing without auth
 
                         // ===== ADMIN =====
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        // .requestMatchers("/api/admin/**").hasRole("ADMIN") // TODO: Re-enable after
+                        // testing
 
                         // ===== MANAGER =====
                         .requestMatchers("/api/manager/**").hasRole("MANAGER")

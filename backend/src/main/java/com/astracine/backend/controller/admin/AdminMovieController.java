@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/movies")
+@RequestMapping("/api/admin/movies")
 @RequiredArgsConstructor
 public class AdminMovieController {
 
