@@ -1,8 +1,8 @@
 package com.astracine.backend.service;
 
-import com.astracine.backend.dto.ChangePasswordRequest;
-import com.astracine.backend.dto.UpdateProfileRequest;
-import com.astracine.backend.dto.UserProfileResponse;
+import com.astracine.backend.dto.profile.ChangePasswordRequest;
+import com.astracine.backend.dto.profile.UpdateProfileRequest;
+import com.astracine.backend.dto.profile.UserProfileResponse;
 
 public interface UserService {
 

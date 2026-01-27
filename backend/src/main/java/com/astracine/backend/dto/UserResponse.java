@@ -22,4 +22,3 @@ public class UserResponse {
     private LocalDateTime updatedAt;
     private Set<String> roles; // Role names only
 }
-

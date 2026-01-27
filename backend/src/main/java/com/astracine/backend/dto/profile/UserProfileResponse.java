@@ -1,4 +1,4 @@
-package com.astracine.backend.dto;
+package com.astracine.backend.dto.profile;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.astracine.backend.dto;
+package com.astracine.backend.dto.profile;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

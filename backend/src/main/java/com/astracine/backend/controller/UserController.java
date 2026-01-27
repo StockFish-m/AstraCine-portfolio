@@ -1,8 +1,8 @@
 package com.astracine.backend.controller;
 
-import com.astracine.backend.dto.ChangePasswordRequest;
-import com.astracine.backend.dto.UpdateProfileRequest;
-import com.astracine.backend.dto.UserProfileResponse;
+import com.astracine.backend.dto.profile.ChangePasswordRequest;
+import com.astracine.backend.dto.profile.UpdateProfileRequest;
+import com.astracine.backend.dto.profile.UserProfileResponse;
 import com.astracine.backend.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
