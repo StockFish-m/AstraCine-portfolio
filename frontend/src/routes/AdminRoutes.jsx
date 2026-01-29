@@ -2,10 +2,10 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom'; // 👈 Nhớ import Routes
 
 import AdminLayout from '../layouts/AdminLayout';
-import Dashboard from '../pages/admin/Dashboard';
-import RoomManager from '../pages/admin/RoomManager';
-import TimeSlotManager from '../pages/admin/TimeSlotManager';
-import ShowtimeManager from '../pages/admin/ShowtimeManager';
+import Dashboard from '../pages/Admin/Dashboard';
+import RoomManager from '../pages/Admin/RoomManager';
+import TimeSlotManager from '../pages/Admin/TimeSlotManager';
+import ShowtimeManager from '../pages/Admin/ShowtimeManager';
 import AdminMovies from '../pages/Admin/AdminMovies';
 import AdminGenres from '../pages/Admin/AdminGenres';
 const AdminRoutes = () => {

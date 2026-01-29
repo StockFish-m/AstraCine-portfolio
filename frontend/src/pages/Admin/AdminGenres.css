@@ -130,10 +130,17 @@
     box-shadow: 0 4px 12px rgba(252, 129, 129, 0.5);
 }
 
+.genre-modal {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
 .genre-modal .modal-content {
     border-radius: 20px;
     border: none;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+
 }
 
 .genre-modal .modal-header {
