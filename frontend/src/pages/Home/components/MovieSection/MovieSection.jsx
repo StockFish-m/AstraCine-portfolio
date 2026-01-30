@@ -14,6 +14,7 @@ function MovieSection({ title, type, movies = [] }) {
               title={movie.title}
               age={movie.ageRating}
               posterUrl={movie.posterUrl}
+              status={movie.status}
               onBuy={() => {
                 console.log("Mua vé:", movie.title);
               }}

@@ -26,4 +26,22 @@ public class ClientMovieController {
     public ResponseEntity<List<MovieResponse>> getComingSoonMovies() {
         return ResponseEntity.ok(movieService.getComingSoonMovies());
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<MovieResponse> getMovieById(@org.springframework.web.bind.annotation.PathVariable Long id) {
+        return ResponseEntity.ok(movieService.getMovieById(id));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<MovieResponse>> searchMovies(
+            @org.springframework.web.bind.annotation.RequestParam(required = false) String status,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) String query,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) Long genreId) {
+        return ResponseEntity.ok(movieService.searchMovies(status, query, genreId));
+    }
+
+    @GetMapping("/genres")
+    public ResponseEntity<List<com.astracine.backend.dto.GenreDTO>> getAllGenres() {
+        return ResponseEntity.ok(movieService.getAllGenres());
+    }
 }

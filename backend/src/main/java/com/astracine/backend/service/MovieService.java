@@ -56,6 +56,12 @@ public class MovieService {
         return convertToResponse(movie);
     }
 
+    public List<MovieResponse> searchMovies(String status, String title, Long genreId) {
+        return movieRepository.searchMovies(status, title, genreId).stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
     public List<MovieResponse> searchMoviesByTitle(String title) {
         return movieRepository.findByTitleContainingIgnoreCase(title).stream()
                 .map(this::convertToResponse)
@@ -65,6 +71,12 @@ public class MovieService {
     public List<MovieResponse> getMoviesByGenre(Long genreId) {
         return movieRepository.findByGenreId(genreId).stream()
                 .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<GenreDTO> getAllGenres() {
+        return genreRepository.findAll().stream()
+                .map(genre -> new GenreDTO(genre.getId(), genre.getName()))
                 .collect(Collectors.toList());
     }
 

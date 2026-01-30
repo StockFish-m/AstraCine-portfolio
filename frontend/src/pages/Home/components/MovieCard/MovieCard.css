@@ -59,6 +59,32 @@
   transform: translateY(-2px);
 }
 
+/* Coming Soon Style */
+.buy-btn-bottom.coming-soon {
+  background-color: #f39c12;
+  /* Orange color */
+  cursor: default;
+  opacity: 0.9;
+}
+
+.buy-btn-bottom.coming-soon:hover {
+  background-color: #f39c12;
+  transform: none;
+}
+
+/* Ended Style */
+.buy-btn-bottom.ended {
+  background-color: #7f8c8d;
+  /* Grey color */
+  cursor: default;
+  opacity: 0.8;
+}
+
+.buy-btn-bottom.ended:hover {
+  background-color: #7f8c8d;
+  transform: none;
+}
+
 
 /* Title */
 .title {
