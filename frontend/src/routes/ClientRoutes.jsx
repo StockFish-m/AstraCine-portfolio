@@ -24,8 +24,8 @@ export default function ClientRoutes() {
         }
       />
 
-        <Route path="booking" element={<ShowtimeBrowser />} />
-        <Route path="booking/showtimes/:showtimeId" element={<SeatSelection />} />
+      <Route path="booking" element={<ShowtimeBrowser />} />
+      <Route path="booking/showtimes/:showtimeId" element={<SeatSelection />} />
     </Route>
   );
 }

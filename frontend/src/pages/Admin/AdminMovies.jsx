@@ -11,7 +11,6 @@ const emptyMovie = {
     title: '',
     description: '',
     duration: '',
-    duration: '',
     releaseDate: '',
     endDate: '',
     ageRating: 'ALL_AGE',
