@@ -1,7 +1,9 @@
 import "./MovieSection.css";
 import MovieCard from "../MovieCard/MovieCard";
+import { useNavigate } from "react-router-dom";
 
 function MovieSection({ title, type, movies = [] }) {
+  const navigate = useNavigate();
   return (
     <section className={`movie-section ${type}`}>
       <div className="container">
@@ -15,9 +17,9 @@ function MovieSection({ title, type, movies = [] }) {
               age={movie.ageRating}
               posterUrl={movie.posterUrl}
               status={movie.status}
-              onBuy={() => {
-                console.log("Mua vé:", movie.title);
-              }}
+              onBuy={() => console.log("Booking:", movie.id)}
+              // Make sure navigation works
+              onClick={() => navigate(`/movies/${movie.id}`)}
             />
           ))}
         </div>

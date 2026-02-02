@@ -129,7 +129,13 @@ const AdminGenres = () => {
                     </tbody>
                 </Table>
 
-                <Modal show={showModal} onHide={handleCloseModal} className="genre-modal">
+                <Modal
+                    show={showModal}
+                    onHide={handleCloseModal}
+                    className="genre-modal"
+                    backdrop="static"
+                    enforceFocus={false}
+                >
                     <Modal.Header closeButton>
                         <Modal.Title>{isEditing ? 'Edit Genre' : 'Add New Genre'}</Modal.Title>
                     </Modal.Header>

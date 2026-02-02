@@ -301,7 +301,15 @@ const AdminMovies = () => {
                 </div>
 
                 {/* MODAL */}
-                <Modal show={showModal} onHide={closeModal} centered size="xl">
+                <Modal
+                    show={showModal}
+                    onHide={closeModal}
+                    centered
+                    size="xl"
+                    className="movie-modal"
+                    backdrop="static"
+                    enforceFocus={false}
+                >
                     <Form onSubmit={handleSave}>
                         <Modal.Header closeButton>
                             <Modal.Title>{isEditing ? 'Edit Movie' : 'Add Movie'}</Modal.Title>
