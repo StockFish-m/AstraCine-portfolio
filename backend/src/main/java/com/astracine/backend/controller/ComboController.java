@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/combos")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class ComboController {
 
@@ -52,5 +53,14 @@ public class ComboController {
     public ResponseEntity<String> delete(@PathVariable Long id) {
         comboService.deleteCombo(id);
         return ResponseEntity.ok("Đã ngừng kinh doanh Combo có ID: " + id);
+    }
+    @GetMapping("/search")
+    public ResponseEntity<List<Combo>> search(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice
+    ) {
+        return ResponseEntity.ok(comboService.searchAndFilterCombos(keyword, status, minPrice, maxPrice));
     }
 }

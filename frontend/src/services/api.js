@@ -38,5 +38,26 @@ export const movieAPI = {
     }),
     delete: (id) => api.delete(`/admin/movies/${id}`),
 };
+    export const comboAPI = {
+    getAll: () => api.get('/api/combos'),
 
+    getActive: () => api.get('/api/combos/active'),
+
+    // 3. Tìm kiếm & Lọc (Dùng cho Menu Board)
+    search: (keyword, minPrice, maxPrice) => {
+        const params = {
+            status: 'ACTIVE' // Mặc định Client chỉ tìm những cái đang bán
+        };
+        if (keyword) params.keyword = keyword;
+        if (minPrice !== undefined && minPrice !== null) params.minPrice = minPrice;
+        if (maxPrice !== undefined && maxPrice !== null) params.maxPrice = maxPrice;
+
+        return api.get('/api/combos/search', { params });
+    },
+
+    getById: (id) => api.get(`/api/combos/${id}`),
+    create: (data) => api.post('/api/combos', data),
+    update: (id, data) => api.put(`/api/combos/${id}`, data),
+    delete: (id) => api.delete(`/api/combos/${id}`),
+};
 export default api;

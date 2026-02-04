@@ -4,9 +4,9 @@ import com.astracine.backend.dto.ComboDTO;
 import com.astracine.backend.entity.Combo;
 import com.astracine.backend.repository.ComboRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.math.BigDecimal;
+import java.util.stream.Collectors;
 import java.util.List;
 
 @Service
@@ -52,5 +52,41 @@ public class ComboService {
         Combo existingCombo = getComboById(id);
         existingCombo.setStatus("INACTIVE");
         comboRepository.save(existingCombo);
+    }
+
+    public List<Combo> searchAndFilterCombos(String keyword, String status, Double minPrice, Double maxPrice) {
+        List<Combo> allCombos = comboRepository.findAll();
+
+        return allCombos.stream()
+                .filter(c -> {
+                    if (keyword != null && !keyword.trim().isEmpty()) {
+                        if (!c.getName().toLowerCase().contains(keyword.trim().toLowerCase())) {
+                            return false;
+                        }
+                    }
+
+                    if (status != null && !status.trim().isEmpty()) {
+                        if (!c.getStatus().equalsIgnoreCase(status.trim())) {
+                            return false;
+                        }
+                    }
+
+                    if (minPrice != null) {
+                        BigDecimal min = BigDecimal.valueOf(minPrice);
+                        if (c.getPrice().compareTo(min) < 0) {
+                            return false;
+                        }
+                    }
+
+                    if (maxPrice != null) {
+                        BigDecimal max = BigDecimal.valueOf(maxPrice);
+                        if (c.getPrice().compareTo(max) > 0) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                })
+                .collect(Collectors.toList());
     }
 }
