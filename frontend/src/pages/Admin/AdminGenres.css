@@ -131,11 +131,12 @@
 }
 
 /* ===== MODAL STYLING ===== */
-.modal-backdrop {
+/* Scope to admin-genres-page to avoid conflicts with other pages */
+.admin-genres-page .modal-backdrop {
     display: none !important;
 }
 
-.modal-backdrop.show {
+.admin-genres-page .modal-backdrop.show {
     display: none !important;
 }
 

@@ -168,11 +168,12 @@
 }
 
 /* ===== MODAL STYLING ===== */
-.modal-backdrop {
+/* Scope to admin-movies-page to avoid conflicts with other pages */
+.admin-movies-page .modal-backdrop {
     display: none !important;
 }
 
-.modal-backdrop.show {
+.admin-movies-page .modal-backdrop.show {
     display: none !important;
 }
 
