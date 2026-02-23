@@ -12,7 +12,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/combos")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class ComboController {
 
