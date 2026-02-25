@@ -10,14 +10,11 @@ function App() {
         <AuthProvider>
             <BrowserRouter>
                 <Routes>
-                    {/* CLIENT & AUTH */}
+                    {/* ADMIN */}
+                    <Route
+                        path="/admin/*"
                         element={
                             <ProtectedRoute>
-                                <Route path="/*" element={<ClientRoutes />} />
-
-                                {/* ADMIN */}
-                                <Route
-                                    path="/admin/*"
                                 <RoleRoute allowRoles={["ROLE_ADMIN"]}>
                                     <AdminRoutes />
                                 </RoleRoute>
@@ -31,10 +28,14 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <RoleRoute allowRoles={["STAFF"]}>
+                                    <div>Staff Dashboard (Coming soon)</div>
                                 </RoleRoute>
                             </ProtectedRoute>
                         }
                     />
+
+                    {/* CLIENT & AUTH (catch-all, must be last) */}
+                    <Route path="/*" element={<ClientRoutes />} />
                 </Routes>
             </BrowserRouter>
         </AuthProvider>
