@@ -13,6 +13,9 @@ import InvoiceSummary from "../pages/InvoiceSummary/InvoiceSummary";
 import PaymentSuccess from "../pages/Payment/PaymentSuccess";
 import PaymentCancel from "../pages/Payment/PaymentCancel";
 
+import DemoTicket from "../pages/Booking/DemoTicket";
+import TicketResult from "../pages/Booking/TicketResult";
+
 import MoviesPage from "../pages/Movies/MoviesPage";
 import MovieDetailPage from "../pages/MovieDetail/MovieDetailPage";
 
@@ -40,6 +43,7 @@ export default function ClientRoutes() {
         <Route path="booking/showtimes/:showtimeId/combo" element={<ComboMenu />} />
         <Route path="booking/showtimes/:showtimeId/invoice" element={<InvoiceSummary />} />
 
+<<<<<<< HEAD
         {/* PayOS Callbacks */}
         <Route path="payment/success" element={<PaymentSuccess />} />
         <Route path="payment/cancel" element={<PaymentCancel />} />
@@ -48,6 +52,15 @@ export default function ClientRoutes() {
         <Route path="movies" element={<MoviesPage />} />
         <Route path="movies/:movieId" element={<MovieDetailPage />} />
       </Route>
+=======
+      {/* Movies Page */}
+      <Route path="movies" element={<MoviesPage />} />
+      <Route path="movies/:movieId" element={<MovieDetailPage />} />
+      
+      <Route path="ticket" element={<TicketResult />} />
+
+    </Route>
+>>>>>>> origin
     </Routes>
   );
 }
