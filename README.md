@@ -45,6 +45,7 @@ The frontend handles real-time seat status and room configurations authored by m
 ![alt text](images/image-2.png)
 ![alt text](images/image-3.png)
 ![alt text](images/image-6.png)
+![alt text](images/image-7.png)
 ### 3. Database Architecture
 Optimized MySQL schema to handle complex relationships between showtimes, seats, and orders.
 ![alt text](images/image-4.png)
