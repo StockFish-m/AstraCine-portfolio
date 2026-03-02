@@ -33,11 +33,23 @@ As the **Team Leader**, I managed the overall project progress and technical arc
 ---
 
 ## 📸 Screenshots/Demo
-*(You should add some screenshots of your React UI here to make it visual)*
-- `[Add image of Seat Selection Screen]`
-- `[Add image of Jira Board]`
+## 📸 Project Showcases
 
----
+### 1. Agile Management with Jira
+As the Team Leader, I managed our Sprints and Backlogs using Jira to ensure the project stayed on track.
+![jira-board](images/image.png)
+
+### 2. Dynamic Seat Selection (React)
+The frontend handles real-time seat status and room configurations authored by me.
+![alt text](images/image-1.png)
+![alt text](images/image-2.png)
+![alt text](images/image-3.png)
+![alt text](images/image-6.png)
+### 3. Database Architecture
+Optimized MySQL schema to handle complex relationships between showtimes, seats, and orders.
+![alt text](images/image-4.png)
+![alt text](images/image-5.png)
+
 
 ## ⚙️ Installation & Setup
 1. **Clone the repository**:
