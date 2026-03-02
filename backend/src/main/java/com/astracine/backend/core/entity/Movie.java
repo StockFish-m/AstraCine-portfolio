@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import com.astracine.backend.core.enums.MovieStatus;
 
 @Entity
 @Table(name = "movies")
@@ -39,8 +40,9 @@ public class Movie {
     @Column(name = "age_rating", length = 10)
     private String ageRating;
 
-    @Column(length = 20)
-    private String status = "SHOWING"; // SHOWING, COMING_SOON, ENDED
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20)
+    private MovieStatus status = MovieStatus.NOW_SHOWING;
 
     @Column(name = "poster_url", columnDefinition = "TEXT")
     private String posterUrl;

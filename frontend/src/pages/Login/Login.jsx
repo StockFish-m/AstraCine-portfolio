@@ -1,12 +1,16 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import "./Login.css";
 import { loginApi } from "../../api/authApi";
 
 function Login() {
   const navigate = useNavigate();
-  const { login } = useAuth(); // giữ nguyên
+  const location = useLocation();
+  const { login } = useAuth();
+
+  // returnUrl được truyền khi bị redirect từ trang khác (VD: chọn ghế)
+  const returnUrl = location.state?.returnUrl || null;
 
   const [form, setForm] = useState({
     identifier: "",
@@ -47,10 +51,9 @@ function Login() {
         navigate("/manager");
       } else if (roles.includes("ROLE_STAFF")) {
         navigate("/staff");
-      } else if (roles.includes("ROLE_CUSTOMER")) {
-        navigate("/");
       } else {
-        navigate("/");
+        // ROLE_CUSTOMER hoặc khác: ưu tiên redirect về trang đã chọn trước đó
+        navigate(returnUrl || "/");
       }
     } catch (err) {
       setError("Sai tài khoản hoặc mật khẩu");

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
+import com.astracine.backend.core.enums.MovieStatus;
 
 @Data
 @NoArgsConstructor
@@ -19,7 +20,7 @@ public class MovieResponse {
     private LocalDate releaseDate;
     private LocalDate endDate;
     private String ageRating;
-    private String status;
+    private MovieStatus status;
     private String posterUrl;
     private String trailerUrl;
     private LocalDateTime createdAt;

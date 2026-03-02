@@ -9,6 +9,9 @@ import ProfilePage from "../pages/Profile/ProfilePage";
 import ProtectedRoute from "./ProtectedRoute";
 import ShowtimeBrowser from "../pages/Booking/ShowtimeBrowser";
 import SeatSelection from "../pages/Booking/SeatSelection";
+import InvoiceSummary from "../pages/InvoiceSummary/InvoiceSummary";
+import PaymentSuccess from "../pages/Payment/PaymentSuccess";
+import PaymentCancel from "../pages/Payment/PaymentCancel";
 
 import MoviesPage from "../pages/Movies/MoviesPage";
 import MovieDetailPage from "../pages/MovieDetail/MovieDetailPage";
@@ -16,29 +19,35 @@ import MovieDetailPage from "../pages/MovieDetail/MovieDetailPage";
 export default function ClientRoutes() {
   return (
     <Routes>
-    <Route element={<ClientLayout />}>
-      <Route index element={<Home />} />
-      <Route path="menu" element={<ComboMenu />} />
-      <Route path="login" element={<Login />} />
-      <Route path="register" element={<Register />} />
-      <Route
-        path="profile"
-        element={
-          <ProtectedRoute>
-            <ProfilePage />
-          </ProtectedRoute>
-        }
-      />
+      <Route element={<ClientLayout />}>
+        <Route index element={<Home />} />
+        <Route path="menu" element={<ComboMenu />} />
+        <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
+        <Route
+          path="profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Booking */}
         <Route path="booking" element={<ShowtimeBrowser />} />
         <Route path="booking/movies/:movieId" element={<ShowtimeBrowser />} />
         <Route path="booking/showtimes/:showtimeId" element={<SeatSelection />} />
+        <Route path="booking/showtimes/:showtimeId/combo" element={<ComboMenu />} />
+        <Route path="booking/showtimes/:showtimeId/invoice" element={<InvoiceSummary />} />
 
-      {/* Movies Page */}
-      <Route path="movies" element={<MoviesPage />} />
-      <Route path="movies/:movieId" element={<MovieDetailPage />} />
-    </Route>
+        {/* PayOS Callbacks */}
+        <Route path="payment/success" element={<PaymentSuccess />} />
+        <Route path="payment/cancel" element={<PaymentCancel />} />
+
+        {/* Movies Page */}
+        <Route path="movies" element={<MoviesPage />} />
+        <Route path="movies/:movieId" element={<MovieDetailPage />} />
+      </Route>
     </Routes>
   );
 }

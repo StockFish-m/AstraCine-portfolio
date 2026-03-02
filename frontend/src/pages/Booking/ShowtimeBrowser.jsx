@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { showtimeApi } from "../../api/showtimeApi.js";
 import { timeSlotApi } from "../../api/timeSlotApi.js";
+import movieApi from "../../api/movieApi.js";
+import { useAuth } from "../../contexts/AuthContext.jsx";
 import "./ShowtimeBrowser.css";
 
 function formatDateTime(iso) {
@@ -30,37 +32,43 @@ function parseDate(iso) {
     return d;
 }
 
-// Extract movie id candidates from showtime DTO (supports multiple shapes)
-function getShowtimeMovieIdCandidates(s) {
-    return [
-        s?.movieId,
-        s?.movieID,
-        s?.movie_id,
-        s?.movie?.id,
-        s?.movie?.movieId,
-        s?.movie?.movieID,
-        s?.movie?.movie_id,
-    ]
-        .filter(Boolean)
-        .map(String);
-}
-
 export default function ShowtimeBrowser() {
     const nav = useNavigate();
     const { movieId } = useParams(); // for /booking/movies/:movieId
+    const { user } = useAuth();
 
-    const [items, setItems] = useState([]);
-    const [slots, setSlots] = useState([]); // TimeSlotDTO[]
+    const [items, setItems] = useState([]);           // all showtimes
+    const [nowShowingMovies, setNowShowingMovies] = useState([]); // all NOW_SHOWING films
+    const [slots, setSlots] = useState([]);           // TimeSlotDTO[]
     const [q, setQ] = useState("");
     const [error, setError] = useState(null);
 
-    // filter state
-    const [date, setDate] = useState(""); // optional
+    // filter state — default to today
+    const todayStr = new Date().toLocaleDateString("sv-SE"); // YYYY-MM-DD in local time
+    const [date, setDate] = useState(todayStr);
     const [activeSlotId, setActiveSlotId] = useState("ALL");
-    const [customFrom, setCustomFrom] = useState("");
-    const [customTo, setCustomTo] = useState("");
+
+    // Build 7-day array starting from today
+    const sevenDays = useMemo(() => {
+        const days = [];
+        const DAY_VI = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+        for (let i = 0; i < 7; i++) {
+            const d = new Date();
+            d.setDate(d.getDate() + i);
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, "0");
+            const dd = String(d.getDate()).padStart(2, "0");
+            days.push({
+                value: `${yyyy}-${mm}-${dd}`,
+                label: i === 0 ? "Hôm nay" : DAY_VI[d.getDay()],
+                dayMonth: `${dd}/${mm}`,
+            });
+        }
+        return days;
+    }, []);
 
     useEffect(() => {
+        // Load all showtimes (admin endpoint — contains movieTitle, startTime, etc.)
         showtimeApi
             .listShowtimes()
             .then(setItems)
@@ -69,6 +77,16 @@ export default function ShowtimeBrowser() {
                 setError(e);
             });
 
+        // Load all NOW_SHOWING movies so we can display them even if they have no showtimes
+        movieApi
+            .getNowShowing()
+            .then(setNowShowingMovies)
+            .catch((e) => {
+                console.warn("load now-showing movies failed", e);
+                setNowShowingMovies([]);
+            });
+
+        // Load time slot tabs
         timeSlotApi
             .list()
             .then(setSlots)
@@ -78,9 +96,9 @@ export default function ShowtimeBrowser() {
             });
     }, []);
 
+    // Filtered showtimes (apply date / slot / time range / search / movieId route param)
     const filtered = useMemo(() => {
         const query = q.trim().toLowerCase();
-        const now = new Date();
 
         // active slot object
         const activeSlot =
@@ -89,25 +107,26 @@ export default function ShowtimeBrowser() {
                 : slots.find((s) => String(s.id) === String(activeSlotId));
 
         return (items || []).filter((s) => {
-            // ✅ validate startTime must be after now
-            const start = parseDate(s.startTime);
-            if (!start) return false;
-            if (start <= now) return false;
-
-            // ✅ filter by movieId if present in route
+            // filter by movieId if present in route
             if (movieId) {
-                const candidates = getShowtimeMovieIdCandidates(s);
+                const candidates = [
+                    s?.movieId,
+                    s?.movieID,
+                    s?.movie_id,
+                    s?.movie?.id,
+                ]
+                    .filter(Boolean)
+                    .map(String);
                 if (!candidates.includes(String(movieId))) return false;
             }
 
-            // search
+            // search by movie title only (no room)
             if (query) {
                 const movie = (s.movieTitle || "").toLowerCase();
-                const room = (s.roomName || "").toLowerCase();
-                if (!(movie.includes(query) || room.includes(query))) return false;
+                if (!movie.includes(query)) return false;
             }
 
-            // date
+            // date filter
             if (date) {
                 const d = getDatePart(s.startTime);
                 if (d !== date) return false;
@@ -115,60 +134,96 @@ export default function ShowtimeBrowser() {
 
             const hhmm = getTimePart(s.startTime);
 
-            // tab slot range (admin tạo)
+            // tab slot range
             if (activeSlot && hhmm) {
-                // TimeSlotDTO thường có startTime/endTime hoặc from/to → bạn chỉnh đúng field nếu khác
                 const from = activeSlot.startTime || activeSlot.from || activeSlot.start || "";
                 const to = activeSlot.endTime || activeSlot.to || activeSlot.end || "";
-
                 if (from && hhmm < String(from).slice(0, 5)) return false;
                 if (to && hhmm > String(to).slice(0, 5)) return false;
             }
 
-            // custom range inside tab
-            if (customFrom && hhmm && hhmm < customFrom) return false;
-            if (customTo && hhmm && hhmm > customTo) return false;
-
             return true;
         });
-    }, [items, slots, q, date, activeSlotId, customFrom, customTo, movieId]);
+    }, [items, slots, q, date, activeSlotId, movieId]);
 
-    const grouped = useMemo(() => {
-        const map = new Map();
-        for (const s of filtered || []) {
-            const key = s.roomName || `Room ${s.roomId}`;
-            if (!map.has(key)) map.set(key, []);
-            map.get(key).push(s);
-        }
-        for (const [, arr] of map) {
-            arr.sort((a, b) => String(a.startTime).localeCompare(String(b.startTime)));
-        }
-        return Array.from(map.entries());
-    }, [filtered]);
+    /**
+     * Group by MOVIE (not by room).
+     * Always include every NOW_SHOWING movie, even those with no showtimes.
+     * If a movieId route param is present, only show that movie.
+     */
+    const groupedByMovie = useMemo(() => {
+        // Build a map: movieTitle → { movie info, showtimes[] }
+        const map = new Map(); // key: movie title (string)
 
-    const handlePickShowtime = (s) => {
-        // ✅ re-validate on click (avoid stale tab)
+        // Seed map with all NOW_SHOWING movies (ensures empty-showtime films appear)
+        for (const m of nowShowingMovies) {
+            if (movieId && String(m.id) !== String(movieId)) continue;
+            if (!map.has(m.title)) {
+                map.set(m.title, { movieTitle: m.title, posterUrl: m.posterUrl, showtimes: [] });
+            }
+        }
+
+        // Attach filtered showtimes to matching movies
+        for (const s of filtered) {
+            const title = s.movieTitle || `Phim #${s.movieId}`;
+            if (!map.has(title)) {
+                // showtime belongs to a movie not in NOW_SHOWING list — still show it
+                map.set(title, { movieTitle: title, posterUrl: null, showtimes: [] });
+            }
+            map.get(title).showtimes.push(s);
+        }
+
+        // Sort showtimes within each movie by startTime
+        for (const entry of map.values()) {
+            entry.showtimes.sort((a, b) =>
+                String(a.startTime).localeCompare(String(b.startTime))
+            );
+        }
+
+        return Array.from(map.values());
+    }, [filtered, nowShowingMovies, movieId]);
+
+    const handlePickShowtime = (s, movieTitle) => {
+        // 1. Auth guard
+        if (!user) {
+            nav("/login", {
+                state: { returnUrl: `/booking/showtimes/${s.id}` },
+            });
+            return;
+        }
+
+        // 2. Validate suất chiếu chưa qua
         const start = parseDate(s.startTime);
         if (!start || start <= new Date()) {
             alert("Suất chiếu đã qua hoặc không hợp lệ. Vui lòng chọn suất khác.");
             return;
         }
-        nav(`/booking/showtimes/${s.id}`);
+
+        // 3. Navigate với thông tin phim + giờ chiếu
+        nav(`/booking/showtimes/${s.id}`, {
+            state: {
+                movieTitle: movieTitle || s.movieTitle || "",
+                startTime: s.startTime,
+                endTime: s.endTime,
+                roomName: s.roomName || "",
+            },
+        });
     };
 
     return (
         <div className="showtime-browser">
-            <h2>Lịch chiếu</h2>
+            <h2>🎬 Lịch chiếu phim</h2>
 
+            {/* Search */}
             <div className="search-row">
                 <input
                     value={q}
                     onChange={(e) => setQ(e.target.value)}
-                    placeholder="Tìm theo tên phim hoặc phòng chiếu..."
+                    placeholder="Tìm theo tên phim..."
                 />
             </div>
 
-            {/* ✅ Tabs khung giờ (admin tạo) */}
+            {/* Time Slot Tabs */}
             <div className="slot-tabs">
                 <button
                     className={`tab ${activeSlotId === "ALL" ? "active" : ""}`}
@@ -176,7 +231,6 @@ export default function ShowtimeBrowser() {
                 >
                     Tất cả
                 </button>
-
                 {slots.map((sl) => (
                     <button
                         key={sl.id}
@@ -189,69 +243,81 @@ export default function ShowtimeBrowser() {
                 ))}
             </div>
 
-            {/* ✅ Trong tab: chọn giờ tuỳ thích */}
-            <div className="slot-custom">
-                <div className="filter-item">
-                    <label>Ngày</label>
-                    <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-                </div>
-
-                <div className="filter-item">
-                    <label>Từ giờ</label>
-                    <input type="time" value={customFrom} onChange={(e) => setCustomFrom(e.target.value)} />
-                </div>
-
-                <div className="filter-item">
-                    <label>Đến giờ</label>
-                    <input type="time" value={customTo} onChange={(e) => setCustomTo(e.target.value)} />
-                </div>
-
-                <button
-                    className="btn-clear"
-                    onClick={() => {
-                        setDate("");
-                        setCustomFrom("");
-                        setCustomTo("");
-                        setActiveSlotId("ALL");
-                    }}
-                    title="Xóa tất cả bộ lọc"
-                >
-                    Xóa lọc
-                </button>
+            {/* 7-day picker */}
+            <div className="day-picker">
+                {sevenDays.map((d) => (
+                    <button
+                        key={d.value}
+                        className={`day-btn${date === d.value ? " active" : ""}`}
+                        onClick={() => setDate(d.value)}
+                    >
+                        <span className="day-label">{d.label}</span>
+                        <span className="day-date">{d.dayMonth}</span>
+                    </button>
+                ))}
             </div>
 
             {error ? <pre className="error">{JSON.stringify(error, null, 2)}</pre> : null}
 
-            {/* ✅ Empty state */}
-            {grouped.length === 0 ? (
-                <div style={{ padding: 12, opacity: 0.85 }}>
-                    {movieId
-                        ? "Không có suất chiếu sắp tới cho phim này (hoặc tất cả suất đã qua)."
-                        : "Không có suất chiếu sắp tới (hoặc tất cả suất đã qua)."}
+            {/* Movie schedule table */}
+            {groupedByMovie.length === 0 ? (
+                <div className="schedule-empty">Không có phim đang chiếu.</div>
+            ) : (
+                <div className="schedule-table-wrapper">
+                    <table className="schedule-table">
+                        <thead>
+                            <tr>
+                                <th className="col-movie">Tên phim</th>
+                                <th className="col-times">Suất chiếu</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {groupedByMovie.map(({ movieTitle, posterUrl, showtimes }) => (
+                                <tr key={movieTitle} className="schedule-row">
+                                    <td className="col-movie">
+                                        <div className="movie-name-cell">
+                                            {posterUrl && (
+                                                <img
+                                                    className="mini-poster"
+                                                    src={posterUrl}
+                                                    alt={movieTitle}
+                                                />
+                                            )}
+                                            <span className="movie-name-text">{movieTitle}</span>
+                                        </div>
+                                    </td>
+                                    <td className="col-times">
+                                        {showtimes.length > 0 ? (
+                                            <div className="time-badges">
+                                                {showtimes.map((s) => {
+                                                    const start = parseDate(s.startTime);
+                                                    const isPast = start && start <= new Date();
+                                                    return (
+                                                        <button
+                                                            key={s.id}
+                                                            className={`time-badge status-${s.status?.toLowerCase()}${isPast ? " past" : ""}`}
+                                                            onClick={() => handlePickShowtime(s, movieTitle)}
+                                                            title={`${formatDateTime(s.startTime)} → ${formatDateTime(s.endTime)}`}
+                                                            disabled={isPast}
+                                                        >
+                                                            {getTimePart(s.startTime)}
+                                                            {s.status === "FULL" && (
+                                                                <span className="badge-tag">Hết ghế</span>
+                                                            )}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        ) : (
+                                            <span className="no-showtime">—</span>
+                                        )}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
-            ) : null}
-
-            {grouped.map(([roomName, list]) => (
-                <div key={roomName} className="room-block">
-                    <h3>{roomName}</h3>
-                    <div className="showtime-list">
-                        {list.map((s) => (
-                            <button
-                                key={s.id}
-                                className="showtime-item"
-                                onClick={() => handlePickShowtime(s)}
-                                title="Chọn suất chiếu để đặt ghế"
-                            >
-                                <div className="movie">{s.movieTitle}</div>
-                                <div className="time">
-                                    {formatDateTime(s.startTime)} → {formatDateTime(s.endTime)}
-                                </div>
-                                <div className="meta">Trạng thái: {s.status}</div>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            ))}
+            )}
         </div>
     );
 }
