@@ -10,7 +10,6 @@ import ProtectedRoute from "./ProtectedRoute";
 import ShowtimeBrowser from "../pages/Booking/ShowtimeBrowser";
 import SeatSelection from "../pages/Booking/SeatSelection";
 
-import DemoTicket from "../pages/Booking/DemoTicket";
 import TicketResult from "../pages/Booking/TicketResult";
 
 import MoviesPage from "../pages/Movies/MoviesPage";

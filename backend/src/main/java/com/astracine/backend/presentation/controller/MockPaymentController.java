@@ -1,10 +1,11 @@
-package com.astracine.backend.controller;
+package com.astracine.backend.presentation.controller;
 
 
-import com.astracine.backend.service.QrCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.astracine.backend.core.service.QrCodeService;
 
 import java.util.HashMap;
 import java.util.Map;
