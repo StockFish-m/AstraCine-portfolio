@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.astracine.backend.core.entity.Movie;
+import com.astracine.backend.core.enums.MovieStatus;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Long> {
 
-        List<Movie> findByStatus(String status);
+        List<Movie> findByStatus(MovieStatus status);
 
         List<Movie> findByTitleContainingIgnoreCase(String title);
 
@@ -24,16 +25,16 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
         List<Movie> findByGenreId(@Param("genreId") Long genreId);
 
         @Query("SELECT m FROM Movie m WHERE m.status = :status ORDER BY m.createdAt DESC")
-        List<Movie> findByStatusOrderByCreatedAtDesc(@Param("status") String status);
+        List<Movie> findByStatusOrderByCreatedAtDesc(@Param("status") MovieStatus status);
 
-        List<Movie> findTop4ByStatusOrderByEndDateAsc(String status);
+        List<Movie> findTop4ByStatusOrderByEndDateAsc(MovieStatus status);
 
-        List<Movie> findTop4ByStatusOrderByReleaseDateAsc(String status);
+        List<Movie> findTop4ByStatusOrderByReleaseDateAsc(MovieStatus status);
 
         @Query("SELECT DISTINCT m FROM Movie m LEFT JOIN m.genres g WHERE " +
                         "(:status IS NULL OR m.status = :status) AND " +
                         "(:title IS NULL OR LOWER(m.title) LIKE LOWER(CONCAT('%', :title, '%'))) AND " +
                         "(:genreId IS NULL OR g.id = :genreId)")
-        List<Movie> searchMovies(@Param("status") String status, @Param("title") String title,
+        List<Movie> searchMovies(@Param("status") MovieStatus status, @Param("title") String title,
                         @Param("genreId") Long genreId);
 }

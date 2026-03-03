@@ -2,11 +2,12 @@ package com.astracine.backend.core.service;
 
 import com.astracine.backend.core.entity.Genre;
 import com.astracine.backend.core.entity.Movie;
+import com.astracine.backend.core.enums.MovieStatus;
 import com.astracine.backend.core.repository.GenreRepository;
 import com.astracine.backend.core.repository.MovieRepository;
-import com.astracine.backend.presentation.dto.GenreDTO;
-import com.astracine.backend.presentation.dto.MovieRequest;
-import com.astracine.backend.presentation.dto.MovieResponse;
+import com.astracine.backend.presentation.dto.movie.GenreDTO;
+import com.astracine.backend.presentation.dto.movie.MovieRequest;
+import com.astracine.backend.presentation.dto.movie.MovieResponse;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,19 +35,20 @@ public class MovieService {
     }
 
     public List<MovieResponse> getMoviesByStatus(String status) {
-        return movieRepository.findByStatusOrderByCreatedAtDesc(status).stream()
+        MovieStatus movieStatus = MovieStatus.valueOf(status.toUpperCase());
+        return movieRepository.findByStatusOrderByCreatedAtDesc(movieStatus).stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
     }
 
     public List<MovieResponse> getNowShowingMovies() {
-        return movieRepository.findTop4ByStatusOrderByEndDateAsc("NOW_SHOWING").stream()
+        return movieRepository.findTop4ByStatusOrderByEndDateAsc(MovieStatus.NOW_SHOWING).stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
     }
 
     public List<MovieResponse> getComingSoonMovies() {
-        return movieRepository.findTop4ByStatusOrderByReleaseDateAsc("COMING_SOON").stream()
+        return movieRepository.findTop4ByStatusOrderByReleaseDateAsc(MovieStatus.COMING_SOON).stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
     }
@@ -58,7 +60,10 @@ public class MovieService {
     }
 
     public List<MovieResponse> searchMovies(String status, String title, Long genreId) {
-        return movieRepository.searchMovies(status, title, genreId).stream()
+        MovieStatus movieStatus = (status != null && !status.isBlank())
+                ? MovieStatus.valueOf(status.toUpperCase())
+                : null;
+        return movieRepository.searchMovies(movieStatus, title, genreId).stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
     }
@@ -176,8 +181,8 @@ public class MovieService {
         movie.setAgeRating(request.getAgeRating());
         movie.setTrailerUrl(request.getTrailerUrl());
 
-        if (request.getStatus() != null) {
-            movie.setStatus(request.getStatus());
+        if (request.getStatus() != null && !request.getStatus().isBlank()) {
+            movie.setStatus(MovieStatus.valueOf(request.getStatus().toUpperCase()));
         }
 
         // Update genres
