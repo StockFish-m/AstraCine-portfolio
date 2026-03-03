@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import "./Login.css";
 import { loginApi } from "../../api/authApi";
@@ -56,7 +56,8 @@ function Login() {
       } else if (roles.includes("ROLE_STAFF")) {
         navigate("/staff");
       } else {
-        navigate("/");
+        // ROLE_CUSTOMER hoặc khác: ưu tiên redirect về trang đã chọn trước đó
+        navigate(returnUrl || "/");
       }
     } catch (err) {
       setError("Sai tài khoản hoặc mật khẩu");

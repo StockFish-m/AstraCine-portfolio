@@ -16,12 +16,12 @@ import java.util.List;
 @Repository
 public interface ShowtimeRepository extends JpaRepository<Showtime, Long> {
 
-    @Query("SELECT s FROM Showtime s " +
-            "WHERE s.room.id = :roomId " +
-            "AND s.status <> :excludedStatus " + // ✅ Sửa thành tham số
-            "AND (s.startTime < :endTime AND s.endTime > :startTime)")
-    List<Showtime> findOverlapping(@Param("roomId") Long roomId,
-            @Param("startTime") LocalDateTime startTime,
-            @Param("endTime") LocalDateTime endTime,
-            @Param("excludedStatus") ShowtimeStatus excludedStatus); // ✅ Thêm tham số
+        @Query("SELECT s FROM Showtime s " +
+                        "WHERE s.room.id = :roomId " +
+                        "AND s.status <> :excludedStatus " + // ✅ Sửa thành tham số
+                        "AND (s.startTime < :endTime AND s.endTime > :startTime)")
+        List<Showtime> findOverlapping(@Param("roomId") Long roomId,
+                        @Param("startTime") LocalDateTime startTime,
+                        @Param("endTime") LocalDateTime endTime,
+                        @Param("excludedStatus") ShowtimeStatus excludedStatus); // ✅ Thêm tham số
 }
